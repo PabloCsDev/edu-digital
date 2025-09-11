@@ -1,121 +1,67 @@
-<!doctype html>
-<html lang="pt-BR">
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Admin — Resultados do Quiz</title>
-  <style>
-    body{font-family:Inter,system-ui,Arial;margin:12px;background:#f6f8fb}
-    .wrap{max-width:1100px;margin:10px auto;padding:18px;background:#fff;border-radius:10px}
-    h1{margin:0 0 8px 0}
-    canvas{max-width:100%;height:320px}
-    table{width:100%;border-collapse:collapse;margin-top:12px}
-    th,td{border:1px solid #eee;padding:8px;text-align:left;font-size:13px}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Digital Seguro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="wrap">
-    <h1>Resultados — Educação Digital Segura</h1>
-    <p class="small">Se não aparecer nada: verifique se o firebaseConfig em admin.js foi preenchido e as regras do Firestore permitem leitura.</p>
+    <div class="quiz-container">
+        <h1>Quiz: Segurança Digital</h1>
 
-    <section>
-      <h3>Gráficos</h3>
-      <canvas id="chartQ1"></canvas>
-      <canvas id="chartQ2"></canvas>
-      <canvas id="chartQ3"></canvas>
-      <canvas id="chartQ4"></canvas>
-      <canvas id="chartQ5"></canvas>
-    </section>
+        <div id="statusMessage" class="status-message"></div>
 
-    <section>
-      <h3>Respostas (bruto)</h3>
-      <table id="tableRaw">
-        <thead><tr><th>Data</th><th>Nome</th><th>Q1</th><th>Q2</th><th>Q3</th><th>Q4</th><th>Q5</th><th>Comentário</th></tr></thead>
-        <tbody></tbody>
-      </table>
-    </section>
-  </div>
+        <form id="quizForm">
+            <!-- Campo para inserir nome e email -->
+            <div class="pergunta">
+                <label>Seu nome:</label>
+                <input type="text" name="nome" placeholder="Seu nome" required>
+            </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+            <div class="pergunta">
+                <label>Seu email:</label>
+                <input type="email" name="email" placeholder="exemplo@dominio.com" required>
+            </div>
 
-  // ---------- Cole seu firebaseConfig aqui (mesmo do app.js) ----------
-  const firebaseConfig = {
-    apiKey: "REPLACE_ME",
-    authDomain: "REPLACE_ME.firebaseapp.com",
-    projectId: "REPLACE_ME",
-    storageBucket: "REPLACE_ME.appspot.com",
-    messagingSenderId: "REPLACE_ME",
-    appId: "REPLACE_ME"
-  };
-  // -------------------------------------------------------------------
+            <!-- Perguntas do quiz -->
+            <script>
+            const perguntas = [
+                "Você já compartilhou sua senha com alguém?",
+                "Você confia em tudo que vê na internet?",
+                "Você já usou inteligência artificial sem orientação?",
+                "Você já clicou em links suspeitos?",
+                "Você utiliza senhas diferentes para cada site?",
+                "Você verifica a autenticidade de informações antes de compartilhar?",
+                "Você sabe o que são fake news?",
+                "Você já sofreu algum tipo de golpe online?",
+                "Você lê as políticas de privacidade antes de aceitar?",
+                "Você sabe o que fazer caso encontre conteúdo impróprio online?"
+            ];
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-  const submissions = collection(db, "submissions");
+            for (let i=0; i<perguntas.length; i++) {
+                document.write(`
+                <div class="pergunta">
+                    <label>${i+1}. ${perguntas[i]}</label>
+                    <select name="pergunta${i+1}" required>
+                        <option value="">Selecione</option>
+                        <option value="Sim">Sim</option>
+                        <option value="Não">Não</option>
+                    </select>
+                </div>
+                `);
+            }
+            </script>
 
-  // Puxar e processar respostas
-  async function loadAndRender() {
-    const snap = await getDocs(submissions);
-    const docs = snap.docs.map(d => d.data());
+            <button type="submit">Enviar Respostas</button>
+        </form>
 
-    if (docs.length === 0) {
-      alert("Nenhuma resposta encontrada. Envie algumas respostas via index.html primeiro.");
-      return;
-    }
+        <div id="successScreen" class="success-screen">
+            <h2>✅ Respostas enviadas com sucesso!</h2>
+            <p>Obrigado por participar do quiz sobre segurança digital.</p>
+        </div>
+    </div>
 
-    // agrega contagens por pergunta
-    const counts = {
-      q1: {}, q2: {}, q3: {}, q4: {}, q5: {}
-    };
-
-    docs.forEach(d => {
-      ["q1","q2","q3","q4","q5"].forEach(q => {
-        const v = d[q] || "Não informado";
-        counts[q][v] = (counts[q][v] || 0) + 1;
-      });
-    });
-
-    // cria gráficos
-    function makeChart(canvasId, dataObj, title) {
-      const labels = Object.keys(dataObj);
-      const values = labels.map(l => dataObj[l]);
-      const ctx = document.getElementById(canvasId).getContext('2d');
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{ label: title, data: values }]
-        },
-        options: { responsive:true, plugins:{legend:{display:false}}}
-      });
-    }
-
-    makeChart('chartQ1', counts.q1, 'Q1: Conhecimento de segurança digital');
-    makeChart('chartQ2', counts.q2, 'Q2: Identificar fake news');
-    makeChart('chartQ3', counts.q3, 'Q3: Uso de IA');
-    makeChart('chartQ4', counts.q4, 'Q4: Reação a link suspeito');
-    makeChart('chartQ5', counts.q5, 'Q5: Importância senha');
-
-    // preencher tabela
-    const tbody = document.querySelector('#tableRaw tbody');
-    docs.sort((a,b)=> new Date(b.createdAt) - new Date(a.createdAt)).forEach(d => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${new Date(d.createdAt).toLocaleString()}</td>
-                      <td>${(d.name||'')}</td>
-                      <td>${d.q1||''}</td>
-                      <td>${d.q2||''}</td>
-                      <td>${d.q3||''}</td>
-                      <td>${d.q4||''}</td>
-                      <td>${d.q5||''}</td>
-                      <td>${(d.comment||'')}</td>`;
-      tbody.appendChild(tr);
-    });
-  }
-
-  loadAndRender().catch(err=>{ console.error(err); alert("Erro ao carregar: veja console") });
-  </script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>

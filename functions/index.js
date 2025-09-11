@@ -4,12 +4,12 @@ const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 
-// Configure seu email e senha de app do Gmail
+// Configurar seu email e App Password do Gmail
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'devpablocarvalho@gmail.com',      // coloque seu email
-    pass: 'whpr axiw yspg nklv'              // use App Password do Gmail
+    user: 'devpablocarvalho@gmail.com',      // seu email
+    pass: 'WHPR-AXIW-YSPG-NKLV'              // sua App Password
   }
 });
 
@@ -18,6 +18,7 @@ exports.sendSubmissionEmail = functions.firestore
   .document('submissions/{docId}')
   .onCreate(async (snap) => {
     const data = snap.data();
+    
     const emailBody = `
 Nome: ${data.nome}
 Email: ${data.email}
@@ -35,12 +36,16 @@ Q9: ${data.pergunta9}
 Q10: ${data.pergunta10}
     `;
 
-    await transporter.sendMail({
-      from: 'devpablocarvalho@gmail.com',
-      to: data.email,
-      subject: 'Cópia das suas respostas - Quiz Educação Digital',
-      text: emailBody
-    });
+    try {
+      await transporter.sendMail({
+        from: 'devpablocarvalho@gmail.com',
+        to: data.email,
+        subject: 'Cópia das suas respostas - Quiz Educação Digital',
+        text: emailBody
+      });
 
-    console.log(`Email enviado para ${data.email}`);
+      console.log(`Email enviado para ${data.email}`);
+    } catch (error) {
+      console.error("Erro ao enviar email:", error);
+    }
   });
