@@ -21,6 +21,7 @@ form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const respostas = {};
+    respostas.nome = form.nome.value;
     respostas.email = form.email.value;
 
     for (let i = 1; i <= 10; i++) {

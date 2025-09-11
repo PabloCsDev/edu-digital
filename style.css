@@ -35,7 +35,7 @@ label {
     margin-bottom: 8px;
 }
 
-select, input[type="email"] {
+select, input[type="email"], input[type="text"] {
     width: 100%;
     padding: 12px;
     border-radius: 8px;
