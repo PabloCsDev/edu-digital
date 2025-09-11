@@ -1,124 +1,92 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Digital Seguro</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Educação Digital</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="quiz-container">
-        <h1>Quiz: Segurança Digital</h1>
+  <div class="quiz-container">
+    <h1>Quiz Educação Digital</h1>
+    <div id="quizScreen">
+      <label for="nome">Nome:</label>
+      <input type="text" id="nome" placeholder="Digite seu nome" required>
 
-        <div id="statusMessage" class="status-message"></div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" placeholder="Digite seu email" required>
 
-        <form id="quizForm">
-            <!-- Campo para inserir email -->
-            <div class="pergunta">
-                <label>Seu email:</label>
-                <input type="email" name="email" placeholder="exemplo@dominio.com" required>
-            </div>
+      <div class="questions">
+        <label>Pergunta 1:</label>
+        <select id="pergunta1">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <!-- Perguntas do quiz -->
-            <div class="pergunta">
-                <label>1. Você já compartilhou sua senha com alguém?</label>
-                <select name="pergunta1" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 2:</label>
+        <select id="pergunta2">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>2. Você confia em tudo que vê na internet?</label>
-                <select name="pergunta2" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 3:</label>
+        <select id="pergunta3">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>3. Você já usou inteligência artificial sem orientação?</label>
-                <select name="pergunta3" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 4:</label>
+        <select id="pergunta4">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>4. Você já clicou em links suspeitos?</label>
-                <select name="pergunta4" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 5:</label>
+        <select id="pergunta5">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>5. Você utiliza senhas diferentes para cada site?</label>
-                <select name="pergunta5" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 6:</label>
+        <select id="pergunta6">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>6. Você verifica a autenticidade de informações antes de compartilhar?</label>
-                <select name="pergunta6" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 7:</label>
+        <select id="pergunta7">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>7. Você sabe o que são fake news?</label>
-                <select name="pergunta7" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 8:</label>
+        <select id="pergunta8">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>8. Você já sofreu algum tipo de golpe online?</label>
-                <select name="pergunta8" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 9:</label>
+        <select id="pergunta9">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
 
-            <div class="pergunta">
-                <label>9. Você lê as políticas de privacidade antes de aceitar?</label>
-                <select name="pergunta9" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
+        <label>Pergunta 10:</label>
+        <select id="pergunta10">
+          <option value="Sim">Sim</option>
+          <option value="Não">Não</option>
+        </select>
+      </div>
 
-            <div class="pergunta">
-                <label>10. Você sabe o que fazer caso encontre conteúdo impróprio online?</label>
-                <select name="pergunta10" required>
-                    <option value="">Selecione</option>
-                    <option value="Sim">Sim</option>
-                    <option value="Não">Não</option>
-                </select>
-            </div>
-
-            <button type="submit">Enviar Respostas</button>
-        </form>
-
-        <div id="successScreen" class="success-screen">
-            <h2>✅ Respostas enviadas com sucesso!</h2>
-            <p>Obrigado por participar do quiz sobre segurança digital.</p>
-        </div>
+      <button id="submitBtn">Enviar</button>
     </div>
 
-    <script type="module" src="app.js"></script>
+    <div id="successScreen" class="hidden">
+      <h2>Obrigado pelo envio!</h2>
+      <p>Suas respostas foram registradas com sucesso.</p>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
