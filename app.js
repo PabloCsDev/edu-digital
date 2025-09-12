@@ -1,72 +1,73 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-// ---------- Config Firebase ----------
-const firebaseConfig = {
-  apiKey: "AIzaSyBJcnbXCF5bQt8-BGjQw1NpIR-gXuAoCYM",
-  authDomain: "edu-digital-28610.firebaseapp.com",
-  projectId: "edu-digital-28610",
-  storageBucket: "edu-digital-28610.firebasestorage.app",
-  messagingSenderId: "552837670984",
-  appId: "1:552837670984:web:848ade625e7afbffc0507d"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-// ------------------------------------
-
-// Elementos do formulário
-const form = document.getElementById("quizForm");
-const successScreen = document.getElementById("successScreen");
-const statusMessage = document.getElementById("statusMessage");
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  // Pegando valores do formulário
-  const respostas = {
-    name: form.nome.value,
-    email: form.email.value
+document.addEventListener("DOMContentLoaded", () => {
+  const firebaseConfig = {
+    apiKey: "AIzaSyBJcnbXCF5bQt8-BGjQw1NpIR-gXuAoCYM",
+    authDomain: "edu-digital-28610.firebaseapp.com",
+    projectId: "edu-digital-28610",
+    storageBucket: "edu-digital-28610.firebasestorage.app",
+    messagingSenderId: "552837670984",
+    appId: "1:552837670984:web:848ade625e7afbffc0507d"
   };
 
-  for (let i = 1; i <= 10; i++) {
-    const select = form.querySelector(`select[name="pergunta${i}"]`);
-    respostas[`pergunta${i}`] = select.value;
-  }
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-  respostas.timestamp = new Date().toISOString();
+  const form = document.getElementById("quizForm");
+  const submitBtn = document.getElementById("submitBtn");
+  const consentCheckbox = document.getElementById("consentCheckbox");
+  const successScreen = document.getElementById("successScreen");
+  const statusMessage = document.getElementById("statusMessage");
 
-  try {
-    // 1️⃣ Salvar no Firebase
-    await addDoc(collection(db, "submissions"), respostas);
+  let isSending = false;
 
-    // 2️⃣ Enviar cópia por EmailJS
-    await emailjs.send(
-      'service_x2vgm6m',   // Service ID
-      'template_y6kf1un',  // Template ID
-      respostas
-    );
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    // 3️⃣ Mostrar tela de sucesso
-    form.style.display = "none";
-    successScreen.style.display = "block";
+    if (isSending) return;
+    if (!consentCheckbox.checked) {
+      alert("Você deve concordar com a LGPD para enviar suas respostas.");
+      return;
+    }
 
-    statusMessage.textContent = "✅ Respostas enviadas com sucesso! Uma cópia foi enviada para seu email.";
-    statusMessage.className = "status-message status-success";
-    statusMessage.style.display = "block";
+    isSending = true;
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Enviando...";
 
-    setTimeout(() => {
-      statusMessage.style.display = "none";
-    }, 5000);
+    const respostas = {
+      name: form.nome.value,
+      email: form.email.value
+    };
 
-  } catch (error) {
-    console.error("Erro ao enviar:", error);
-    statusMessage.textContent = "❌ Erro ao enviar respostas! Tente novamente.";
-    statusMessage.className = "status-message status-error";
-    statusMessage.style.display = "block";
+    for (let i = 1; i <= 10; i++) {
+      const select = form.querySelector(`select[name="pergunta${i}"]`);
+      if (select) respostas[`pergunta${i}`] = select.value;
+    }
 
-    setTimeout(() => {
-      statusMessage.style.display = "none";
-    }, 5000);
-  }
+    respostas.timestamp = new Date().toISOString();
+
+    try {
+      await addDoc(collection(db, "submissions"), respostas);
+      await emailjs.send('service_x2vgm6m', 'template_y6kf1un', respostas);
+
+      form.style.display = "none";
+      successScreen.style.display = "block";
+      statusMessage.textContent = "✅ Respostas enviadas com sucesso! Uma cópia foi enviada para seu email.";
+      statusMessage.className = "status-message status-success";
+      statusMessage.style.display = "block";
+      setTimeout(() => { statusMessage.style.display = "none"; }, 5000);
+
+    } catch (error) {
+      console.error(error);
+      statusMessage.textContent = "❌ Erro ao enviar respostas! Tente novamente.";
+      statusMessage.className = "status-message status-error";
+      statusMessage.style.display = "block";
+      setTimeout(() => { statusMessage.style.display = "none"; }, 5000);
+
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Enviar";
+      isSending = false;
+    }
+  });
 });
