@@ -2,7 +2,6 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebas
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
-
 const firebaseConfig = {
   apiKey: "AIzaSyBJcnbXCF5bQt8-BGjQw1NpIR-gXuAoCYM",
   authDomain: "edu-digital-28610.firebaseapp.com",
@@ -17,7 +16,6 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
-
 const btnSignIn = document.getElementById("btnSignIn");
 const btnSignOut = document.getElementById("btnSignOut");
 const userEmailSpan = document.getElementById("userEmail");
@@ -25,22 +23,14 @@ const adminContent = document.getElementById("adminContent");
 const accessHint = document.getElementById("accessHint");
 const tableBody = document.querySelector("#tableRaw tbody");
 
-
 const allowedEmails = ["devpablocarvalho@gmail.com"];
 
-
 btnSignIn.addEventListener("click", async () => {
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (err) {
-    alert("Erro no login: " + err.message);
-  }
+  try { await signInWithPopup(auth, provider); }
+  catch(err){ alert("Erro no login: " + err.message); }
 });
 
-btnSignOut.addEventListener("click", async () => {
-  await signOut(auth);
-});
-
+btnSignOut.addEventListener("click", async () => { await signOut(auth); });
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
@@ -65,7 +55,6 @@ onAuthStateChanged(auth, async (user) => {
     accessHint.textContent = "Faça login com uma conta autorizada para ver o painel.";
   }
 });
-
 
 async function carregarRespostas() {
   const snapshot = await getDocs(collection(db, "submissions"));
