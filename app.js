@@ -24,7 +24,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     if (isSending) return;
     if (!consentCheckbox.checked) {
       alert("Você deve concordar com a LGPD para enviar suas respostas.");
@@ -53,18 +52,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
       form.style.display = "none";
       successScreen.style.display = "block";
-      statusMessage.textContent = "✅ Respostas enviadas com sucesso! Uma cópia foi enviada para seu email.";
+      statusMessage.textContent = "✅ Respostas enviadas com sucesso!";
       statusMessage.className = "status-message status-success";
       statusMessage.style.display = "block";
-      setTimeout(() => { statusMessage.style.display = "none"; }, 5000);
+
+      setTimeout(() => {
+        statusMessage.style.display = "none";
+      }, 3000);
 
     } catch (error) {
       console.error(error);
       statusMessage.textContent = "❌ Erro ao enviar respostas! Tente novamente.";
       statusMessage.className = "status-message status-error";
       statusMessage.style.display = "block";
-      setTimeout(() => { statusMessage.style.display = "none"; }, 5000);
-
       submitBtn.disabled = false;
       submitBtn.textContent = "Enviar";
       isSending = false;
