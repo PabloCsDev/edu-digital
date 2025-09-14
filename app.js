@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
-import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const firebaseConfig = {
@@ -13,6 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
   const form = document.getElementById("quizForm");
   const submitBtn = document.getElementById("submitBtn");
@@ -20,17 +23,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const successScreen = document.getElementById("successScreen");
   const statusMessage = document.getElementById("statusMessage");
 
+  const adminTable = document.getElementById("adminTable");
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
   let isSending = false;
 
+ 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-
     if (isSending) return;
     if (!consentCheckbox.checked) {
       alert("Você deve concordar com a LGPD para enviar suas respostas.");
       return;
     }
-
     isSending = true;
     submitBtn.disabled = true;
     submitBtn.textContent = "Enviando...";
@@ -68,6 +74,59 @@ document.addEventListener("DOMContentLoaded", () => {
       submitBtn.disabled = false;
       submitBtn.textContent = "Enviar";
       isSending = false;
+    }
+  });
+
+  const allowedEmails = [
+  "devpablocarvalho@gmail.com",
+];
+
+  if (loginBtn) {
+    loginBtn.addEventListener("click", async () => {
+      try {
+        await signInWithPopup(auth, provider);
+      } catch (err) {
+        alert("Erro no login: " + err.message);
+      }
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => signOut(auth));
+  }
+
+ cação
+  onAuthStateChanged(auth, async (user) => {
+    if (user && adminTable) {
+ 
+      const adminEmails = ["devpablocarvalho@gmail.com"];
+      if (!adminEmails.includes(user.email)) {
+        alert("Acesso negado: você não é administrador.");
+        signOut(auth);
+        return;
+      }
+
+      loginBtn.style.display = "none";
+      logoutBtn.style.display = "inline-block";
+      adminTable.style.display = "block";
+
+     
+      const snapshot = await getDocs(collection(db, "submissions"));
+      adminTable.innerHTML = "<tr><th>Nome</th><th>Email</th><th>Respostas</th><th>Data</th></tr>";
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        adminTable.innerHTML += `<tr>
+          <td>${data.name}</td>
+          <td>${data.email}</td>
+          <td>${JSON.stringify(data)}</td>
+          <td>${data.timestamp}</td>
+        </tr>`;
+      });
+
+    } else if (adminTable) {
+      loginBtn.style.display = "inline-block";
+      logoutBtn.style.display = "none";
+      adminTable.style.display = "none";
     }
   });
 });
