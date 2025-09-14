@@ -1,67 +1,96 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Digital Seguro</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Admin - Quiz</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #4364f7;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
-    <div class="quiz-container">
-        <h1>Quiz: Segurança Digital</h1>
+  <h1>Painel de Respostas - Quiz</h1>
 
-        <div id="statusMessage" class="status-message"></div>
+  <table id="respostasTable">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Data</th>
+        <th>Respostas</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-        <form id="quizForm">
-            <!-- Campo para inserir nome e email -->
-            <div class="pergunta">
-                <label>Seu nome:</label>
-                <input type="text" name="nome" placeholder="Seu nome" required>
-            </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore.js";
 
-            <div class="pergunta">
-                <label>Seu email:</label>
-                <input type="email" name="email" placeholder="exemplo@dominio.com" required>
-            </div>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBJcnbXCF5bQt8-BGjQw1NpIR-gXuAoCYM",
+      authDomain: "edu-digital-28610.firebaseapp.com",
+      projectId: "edu-digital-28610",
+      storageBucket: "edu-digital-28610.firebasestorage.app",
+      messagingSenderId: "552837670984",
+      appId: "1:552837670984:web:848ade625e7afbffc0507d"
+    };
 
-            <!-- Perguntas do quiz -->
-            <script>
-            const perguntas = [
-                "Você já compartilhou sua senha com alguém?",
-                "Você confia em tudo que vê na internet?",
-                "Você já usou inteligência artificial sem orientação?",
-                "Você já clicou em links suspeitos?",
-                "Você utiliza senhas diferentes para cada site?",
-                "Você verifica a autenticidade de informações antes de compartilhar?",
-                "Você sabe o que são fake news?",
-                "Você já sofreu algum tipo de golpe online?",
-                "Você lê as políticas de privacidade antes de aceitar?",
-                "Você sabe o que fazer caso encontre conteúdo impróprio online?"
-            ];
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-            for (let i=0; i<perguntas.length; i++) {
-                document.write(`
-                <div class="pergunta">
-                    <label>${i+1}. ${perguntas[i]}</label>
-                    <select name="pergunta${i+1}" required>
-                        <option value="">Selecione</option>
-                        <option value="Sim">Sim</option>
-                        <option value="Não">Não</option>
-                    </select>
-                </div>
-                `);
-            }
-            </script>
+    async function carregarRespostas() {
+      const querySnapshot = await getDocs(collection(db, "submissions"));
+      const tbody = document.querySelector("#respostasTable tbody");
+      tbody.innerHTML = "";
 
-            <button type="submit">Enviar Respostas</button>
-        </form>
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const tr = document.createElement("tr");
 
-        <div id="successScreen" class="success-screen">
-            <h2>✅ Respostas enviadas com sucesso!</h2>
-            <p>Obrigado por participar do quiz sobre segurança digital.</p>
-        </div>
-    </div>
+        tr.innerHTML = `
+          <td>${data.name || data.nome || "-"}</td>
+          <td>${data.email || "-"}</td>
+          <td>${data.timestamp ? new Date(data.timestamp).toLocaleString() : "-"}</td>
+          <td>
+            ${Object.keys(data)
+              .filter(k => k.startsWith("pergunta"))
+              .map(k => `<strong>${k}:</strong> ${data[k]}`)
+              .join("<br>")}
+          </td>
+        `;
 
-    <script type="module" src="app.js"></script>
+        tbody.appendChild(tr);
+      });
+    }
+
+    carregarRespostas();
+  </script>
 </body>
 </html>

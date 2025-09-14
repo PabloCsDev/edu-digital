@@ -4,21 +4,21 @@ const nodemailer = require("nodemailer");
 
 admin.initializeApp();
 
-// Configurar seu email e App Password do Gmail
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'devpablocarvalho@gmail.com',      // seu email
-    pass: 'WHPR-AXIW-YSPG-NKLV'              // sua App Password
+    user: 'devpablocarvalho@gmail.com',
+    pass: 'WHPR-AXIW-YSPG-NKLV'
   }
 });
 
-// Função disparada ao criar um documento em 'submissions'
+
 exports.sendSubmissionEmail = functions.firestore
   .document('submissions/{docId}')
   .onCreate(async (snap) => {
     const data = snap.data();
-    
+
     const emailBody = `
 Nome: ${data.nome}
 Email: ${data.email}
